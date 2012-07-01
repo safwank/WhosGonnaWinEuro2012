@@ -9,9 +9,9 @@ exports.index = function(req, res){
 
 // POST /
 exports.submit = function (req, res, next) {
-    var redis = require("redis"),
-	client = redis.createClient();
-	
+    var rtg = require("url").parse(process.env.REDISTOGO_URL);
+    var client = require("redis").createClient(rtg.port, rtg.hostname);
+
     client.on("error", function (err) {
         console.log("Error " + err);
     });
