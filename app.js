@@ -29,7 +29,7 @@ app.configure('production', function(){
 });
 
 app.helpers({
-    title: 'Who is gonna win Euro 2012?'
+    title: 'Who\'s gonna win Euro 2012?'
 });
 
 // Routes
