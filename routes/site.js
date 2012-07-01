@@ -1,26 +1,64 @@
-/*
- * GET home page.
- */
+function getRedisClient() {
+    var client;
+    var redis = require('redis');
+    
+    if (process.env.REDISTOGO_URL) {
+	var rtg = require('url').parse(process.env.REDISTOGO_URL);
+	client = redis.createClient(rtg.port, rtg.hostname);
+	client.auth(rtg.auth.split(':')[1]);
+    } else {
+	client = redis.createClient(9043, 'pike.redistogo.com');
+	client.auth('e66ad1929333785c39bda05c20b172a7');
+    }
+    
+    client.on('error', function (err) {
+        console.log('Error ' + err);
+    });
 
- // GET /
+    return client;
+}
+
+// GET /
 exports.index = function(req, res){
     res.render('index');
 };
 
 // POST /
 exports.submit = function (req, res, next) {
-    var rtg = require("url").parse(process.env.REDISTOGO_URL);
-    var redis = require("redis");
-    var client = redis.createClient(rtg.port, rtg.hostname);
-    client.auth(rtg.auth.split(":")[1]);
-
-    client.on("error", function (err) {
-        console.log("Error " + err);
+    var client = getRedisClient();
+    /*
+    client.get("italy", function (err, reply) {
+	client.set("italy", reply + 1);
+        console.log('Submit: ' + reply.toString());
+	res.redirect('/result');
+    }); */
+    
+    client.incr('italy', function (err, reply) {
+	console.log('Submit: ' + reply.toString());
+	client.quit();
+	res.redirect('/result');
     });
-
-    var count = client.get("italy");
-    client.set("italy", count + 1, redis.print);
-
-    if (err) return next(err);
-    res.redirect('/results');
 };
+
+// GET /result
+exports.result = function (req, res) {
+    var client = getRedisClient();
+    client.get("italy", function (err, reply) {
+	res.render('result', {
+	    count: reply
+	});
+	console.log('Result: ' + reply);
+	client.quit();
+    });
+};
+
+// GET /reset
+exports.reset = function (req, res, next) {
+    var client = getRedisClient();
+    client.set('italy', 0, function (err, reply) {
+	client.quit();
+        res.redirect('/');
+    });
+};
+
+

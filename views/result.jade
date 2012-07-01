@@ -1,0 +1,29 @@
+head
+   script(type='text/javascript', src='https://www.google.com/jsapi')
+   script(type='text/javascript')
+      google.load('visualization', '1', {packages:['corechart']})
+      google.setOnLoadCallback(drawChart)
+      function drawChart() {
+         var data = google.visualization.arrayToDataTable([['Team', ''], ['Italy', #{count}], ['Spain', 0]])
+         var options = { 
+            animation: {
+               duration: 2000,
+               easing: 'inAndOut' 
+            },
+            vAxis: { gridlines: { color: '#fff' } },
+            hAxis: { gridlines: { color: '#fff' }, baselineColor: '#fff' },
+            legend: { position: 'none' }
+         }
+         var chart = new google.visualization.BarChart(document.getElementById('chart_div'))
+         chart.draw(data, options)
+      }
+
+body
+   h1 And the winner is...
+
+   p
+      #chart_div
+      
+   p
+      a(href='/') Wanna revote?
+   

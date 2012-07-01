@@ -36,6 +36,8 @@ app.helpers({
 
 app.get('/', routes.site.index);
 app.post('/', routes.site.submit);
+app.get('/result', routes.site.result);
+app.get('/reset', routes.site.reset);
 
 app.listen(process.env.PORT || 3000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
