@@ -7,8 +7,7 @@ function getRedisClient() {
 	client = redis.createClient(rtg.port, rtg.hostname);
 	client.auth(rtg.auth.split(':')[1]);
     } else {
-	client = redis.createClient(9043, 'pike.redistogo.com');
-	client.auth('e66ad1929333785c39bda05c20b172a7');
+	client = redis.createClient();
     }
     
     client.on('error', function (err) {
@@ -26,13 +25,6 @@ exports.index = function(req, res){
 // POST /
 exports.submit = function (req, res, next) {
     var client = getRedisClient();
-    /*
-    client.get("italy", function (err, reply) {
-	client.set("italy", reply + 1);
-        console.log('Submit: ' + reply.toString());
-	res.redirect('/result');
-    }); */
-    
     client.incr('italy', function (err, reply) {
 	console.log('Submit: ' + reply.toString());
 	client.quit();
@@ -43,7 +35,7 @@ exports.submit = function (req, res, next) {
 // GET /result
 exports.result = function (req, res) {
     var client = getRedisClient();
-    client.get("italy", function (err, reply) {
+    client.get('italy', function (err, reply) {
 	res.render('result', {
 	    count: reply
 	});
